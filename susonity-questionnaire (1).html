@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Susonity | Skincare Questionnaire</title>
+  <style>
+    :root {
+      --bg: #0B0F14;
+      --card: rgba(255,255,255,0.06);
+      --card-solid: #111823;
+      --text: #F4F7FB;
+      --muted: rgba(244,247,251,0.72);
+      --border: rgba(244,247,251,0.14);
+      --shadow: 0 18px 60px rgba(0,0,0,0.55);
+
+      --brand: #7A5CFF;
+      --brand-2: #2DE2E6;
+      --brand-dark: #5D42E6;
+      --danger: #FF5C7A;
+
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(122,92,255,0.25), transparent 60%),
+        radial-gradient(900px 500px at 90% 20%, rgba(45,226,230,0.18), transparent 55%),
+        radial-gradient(900px 700px at 50% 100%, rgba(122,92,255,0.12), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      backdrop-filter: blur(10px);
+    }
+
+    .top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 10px; }
+
+    .brand { display:flex; align-items:center; gap:12px; }
+    .logo {
+      width: 38px; height: 38px; border-radius: 12px;
+      background: conic-gradient(from 210deg, var(--brand), var(--brand-2), var(--brand));
+      box-shadow: 0 10px 30px rgba(122,92,255,0.25);
+    }
+    .brand h1 { margin:0; font-size: 18px; letter-spacing: 0.2px; font-weight: 650; }
+    .brand small { display:block; color: var(--muted); font-weight: 500; margin-top: 2px; }
+
+    .subtitle { color: var(--muted); margin: 10px 0 22px; font-size: 14.5px; line-height: 1.45; }
+
+    .progress { height: 8px; background: rgba(244,247,251,0.10); border-radius: 999px; overflow: hidden; margin: 0 0 26px; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); width: 0%; transition: width 0.3s ease; }
+
+    .question { display:none; }
+    .question.active { display:block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .question h2 { font-size: 20px; margin: 0 0 8px; font-weight: 650; }
+    .hint { color: var(--muted); font-size: 13px; margin: 0 0 16px; }
+
+    .options { display:flex; flex-direction:column; gap: 10px; margin-bottom: 22px; }
+    .option {
+      display:flex; align-items:flex-start; gap: 12px;
+      padding: 14px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+      background: rgba(17,24,35,0.45);
+    }
+    .option:hover { border-color: rgba(122,92,255,0.6); background: rgba(122,92,255,0.10); transform: translateY(-1px); }
+    .option input { margin-top: 2px; accent-color: var(--brand); transform: scale(1.1); }
+    .option.selected { border-color: rgba(45,226,230,0.75); background: rgba(45,226,230,0.08); }
+    .option .label { line-height: 1.35; }
+
+    .field {
+      display:flex; flex-direction:column; gap: 10px; margin-bottom: 22px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(17,24,35,0.45);
+    }
+    .field label { font-size: 13px; color: var(--muted); }
+    .field input[type=number] {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(244,247,251,0.18);
+      background: rgba(0,0,0,0.22);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size: 16px;
+      outline: none;
+    }
+    .field input[type=number]:focus { border-color: rgba(122,92,255,0.75); box-shadow: 0 0 0 4px rgba(122,92,255,0.18); }
+
+    .nav { display:flex; justify-content: space-between; gap: 12px; }
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14.5px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    }
+    button:active { transform: translateY(1px); }
+
+    .btn-primary { background: linear-gradient(90deg, var(--brand), var(--brand-2)); color: #071017; }
+    .btn-primary:hover:not(:disabled) { opacity: 0.96; }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: rgba(122,92,255,0.6); color: var(--text); }
+
+    .result { display:none; }
+    .result.active { display:block; animation: fadeIn 0.35s ease; }
+
+    .badge {
+      display:inline-flex; align-items:center; gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(122,92,255,0.16);
+      border: 1px solid rgba(122,92,255,0.28);
+      color: rgba(244,247,251,0.92);
+      font-size: 12.5px;
+      font-weight: 650;
+      margin-bottom: 12px;
+    }
+    .badge .dot { width: 8px; height: 8px; border-radius: 999px; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+
+    .result h2 { margin: 0 0 10px; font-size: 22px; }
+    .result p { margin: 0 0 18px; color: var(--muted); line-height: 1.55; }
+
+    .rec-list { display:flex; flex-direction:column; gap: 10px; margin: 18px 0 22px; }
+    .rec-item {
+      border: 1px solid var(--border);
+      background: rgba(17,24,35,0.45);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .rec-item .name { font-weight: 750; }
+    .rec-item .meta { color: var(--muted); font-size: 13px; margin-top: 6px; line-height: 1.4; }
+
+    .smallprint { color: rgba(244,247,251,0.55); font-size: 12px; line-height: 1.45; margin-top: 10px; }
+
+    @media (max-width: 520px) {
+      .container { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Susonity</h1>
+          <small>Skincare Questionnaire</small>
+        </div>
+      </div>
+    </div>
+
+    <p class="subtitle">
+      Answer six quick questions to get a personalized recommendation of three Susonity ingredients.
+    </p>
+
+    <div class="progress" aria-label="Progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <section id="quiz"></section>
+
+    <section class="result" id="result" aria-live="polite">
+      <div class="badge"><span class="dot"></span>Your recommendation</div>
+      <h2>Top 3 Susonity ingredients</h2>
+      <p>
+        Based on your answers, these ingredients match best.
+      </p>
+
+      <div class="rec-list" id="recList"></div>
+
+      <div class="nav">
+        <button class="btn-secondary" onclick="restart()">Restart</button>
+        <button class="btn-primary" onclick="showBreakdown()">Why these?</button>
+      </div>
+      <div class="smallprint" id="breakdown" style="display:none;"></div>
+      <div class="smallprint">
+        Note: This tool provides a cosmetic ingredient recommendation and does not constitute medical advice.
+      </div>
+    </section>
+  </main>
+
+<script>
+  const questions = [{"id": "age", "title": "What is your age group?", "hint": null, "type": "choice", "options": [{"value": "c2", "label": "< 25", "col": 2}, {"value": "c3", "label": "25 - 35", "col": 3}, {"value": "c4", "label": "36 - 45", "col": 4}, {"value": "c5", "label": "46 - 60", "col": 5}, {"value": "c6", "label": "> 60", "col": 6}], "weight": 1}, {"id": "antioxidant", "title": "What is your measured antioxidant level score (1–10)?", "hint": "We will classify 1–5 as Antioxidant Level: Low and 6–10 as Antioxidant Level: High.", "type": "number", "min": 1, "max": 10, "step": 1, "weight": 2}, {"id": "skin_type", "title": "What is your skin type?", "hint": null, "type": "choice", "options": [{"value": "c9", "label": "NORMAL", "col": 9}, {"value": "c10", "label": "DRY", "col": 10}, {"value": "c11", "label": "SENSITIVE", "col": 11}, {"value": "c12", "label": "OILY", "col": 12}, {"value": "c13", "label": "COMBINATION", "col": 13}], "weight": 5}, {"id": "skin_condition", "title": "Which skin condition best describes your skin right now?", "hint": null, "type": "choice", "options": [{"value": "c14", "label": "dehydrated", "col": 14}, {"value": "c15", "label": "blemish-prone / acne-prone", "col": 15}, {"value": "c16", "label": "mature", "col": 16}, {"value": "c17", "label": "barrier-impaired", "col": 17}, {"value": "c18", "label": "pigmentation-prone skin", "col": 18}], "weight": 4}, {"id": "outside", "title": "How much time do you typically spend outdoors (pollution and UV exposure)?", "hint": null, "type": "choice", "options": [{"value": "c19", "label": "little", "col": 19}, {"value": "c20", "label": "moderate", "col": 20}, {"value": "c21", "label": "a lot", "col": 21}], "weight": 3}, {"id": "goal", "title": "What is your main skincare goal?", "hint": null, "type": "choice", "options": [{"value": "c22", "label": "Intensive hydration", "col": 22}, {"value": "c23", "label": "Anti-ageing / firmer skin", "col": 23}, {"value": "c24", "label": "Clear, pure skin", "col": 24}, {"value": "c25", "label": "A radiant, even complexion", "col": 25}, {"value": "c26", "label": "Soothing & protection", "col": 26}], "weight": 6}];
+  const products = [{"name": "Emblica®", "catalog": "130165"}, {"name": "RonaCare® AP", "catalog": "130163"}, {"name": "RonaCare® Bisabolol nat.", "catalog": "130170"}, {"name": "RonaCare® CP-5 alcoholfree", "catalog": "132398"}, {"name": "RonaCare® Ectoin", "catalog": "130200"}, {"name": "RonaCare® Poppy SE", "catalog": "132149"}, {"name": "RonaCare® Luremin", "catalog": "130204"}, {"name": "RonaCare® Balmance", "catalog": "132376"}, {"name": "RonaCare® Epintegrity", "catalog": "132377"}, {"name": "RonaCare® Nicotinamide", "catalog": "130179"}];
+  const matrix = {"Emblica®": [2, 3, 4, 5, 6, 7, 9, 18, 21, 25, 26], "RonaCare® AP": [2, 3, 4, 5, 6, 8, 9, 15, 16, 21, 23, 24, 26], "RonaCare® Bisabolol nat.": [2, 3, 4, 5, 6, 10, 11, 14, 17, 20, 26], "RonaCare® CP-5 alcoholfree": [5, 6, 10, 11, 14, 16, 22, 23, 25], "RonaCare® Ectoin": [2, 3, 4, 5, 6, 9, 10, 14, 16, 21, 22, 23, 26], "RonaCare® Poppy SE": [4, 5, 6, 9, 11, 16, 23, 25], "RonaCare® Luremin": [4, 5, 6, 9, 11, 16, 17, 23, 25], "RonaCare® Balmance": [2, 3, 4, 5, 6, 11, 15, 17, 20, 24, 26], "RonaCare® Epintegrity": [5, 6, 10, 11, 14, 16, 17, 20, 22, 26], "RonaCare® Nicotinamide": [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 22, 23, 24, 25, 26]};
+
+  const answers = {};
+  let currentIndex = 0;
+
+  function updateProgress() {
+    const pct = (currentIndex / questions.length) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function renderQuestion() {
+    const quiz = document.getElementById('quiz');
+    const q = questions[currentIndex];
+
+    let inner = `<div class="question active">
+      <h2>${q.title}</h2>
+      ${q.hint ? `<p class="hint">${q.hint}</p>` : ''}
+    `;
+
+    if (q.type === 'choice') {
+      const selected = answers[q.id] ?? null;
+      inner += `<div class="options">` + q.options.map(opt => {
+        const isSelected = selected === opt.value;
+        return `<label class="option ${isSelected ? 'selected' : ''}">
+          <input type="radio" name="${q.id}" value="${opt.value}" ${isSelected ? 'checked' : ''}>
+          <div class="label">${opt.label}</div>
+        </label>`;
+      }).join('') + `</div>`;
+    } else if (q.type === 'number') {
+      const val = answers[q.id] ?? '';
+      inner += `<div class="field">
+        <label for="num_${q.id}">Enter a value between ${q.min} and ${q.max}</label>
+        <input id="num_${q.id}" type="number" inputmode="numeric" min="${q.min}" max="${q.max}" step="${q.step}" value="${val}" placeholder="e.g., 7" />
+      </div>`;
+    }
+
+    inner += `<div class="nav">
+        <button class="btn-secondary" onclick="prev()" ${currentIndex === 0 ? "style='visibility:hidden'" : ""}>Back</button>
+        <button class="btn-primary" id="nextBtn" onclick="next()" disabled>
+          ${currentIndex === questions.length - 1 ? 'Show recommendation' : 'Next'}
+        </button>
+      </div>
+    </div>`;
+
+    quiz.innerHTML = inner;
+
+    if (q.type === 'choice') {
+      quiz.querySelectorAll('input').forEach(input => input.addEventListener('change', () => handleChoice(q)));
+    } else if (q.type === 'number') {
+      const input = document.getElementById(`num_${q.id}`);
+      input.addEventListener('input', () => handleNumber(q));
+    }
+
+    updateNextButton(q);
+    updateProgress();
+  }
+
+  function handleChoice(q) {
+    const inputs = document.querySelectorAll(`input[name="${q.id}"]`);
+    answers[q.id] = Array.from(inputs).find(i => i.checked)?.value;
+    document.querySelectorAll('.option').forEach((label, i) => {
+      label.classList.toggle('selected', inputs[i].checked);
+    });
+    updateNextButton(q);
+  }
+
+  function handleNumber(q) {
+    const v = parseInt(document.getElementById(`num_${q.id}`).value, 10);
+    answers[q.id] = Number.isFinite(v) ? v : null;
+    updateNextButton(q);
+  }
+
+  function isAnswerValid(q) {
+    if (q.type === 'choice') return !!answers[q.id];
+    if (q.type === 'number') {
+      const v = answers[q.id];
+      return Number.isFinite(v) && v >= q.min && v <= q.max;
+    }
+    return false;
+  }
+
+  function updateNextButton(q) {
+    const btn = document.getElementById('nextBtn');
+    if (!btn) return;
+    btn.disabled = !isAnswerValid(q);
+  }
+
+  function next() {
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function prev() {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderQuestion();
+    }
+  }
+
+  function aoToColumn(score) {
+    // 1-5 => AO LOW (col 7), 6-10 => AO HIGH (col 8)
+    if (!Number.isFinite(score)) return null;
+    return (score <= 5) ? 7 : 8;
+  }
+
+  function selectedColumns() {
+    const cols = [];
+
+    // Choice questions store values like 'c<col>'
+    for (const q of questions) {
+      if (q.type === 'choice') {
+        const v = answers[q.id];
+        if (!v) continue;
+        const col = parseInt(v.replace('c',''), 10);
+        if (Number.isFinite(col)) cols.push(col);
+      }
+    }
+
+    // AO score
+    const aoScore = answers['antioxidant'];
+    const aoCol = aoToColumn(aoScore);
+    if (aoCol !== null) cols.push(aoCol);
+
+    return cols;
+  }
+
+  function computeScores() {
+    // Weighted score + tie-break vector
+    const chosen = selectedColumns();
+    const chosenSet = new Set(chosen);
+
+    // Map category -> chosen col (for weighted scoring)
+    const chosenByCat = {};
+    for (const q of questions) {
+      if (q.type === 'choice') {
+        const v = answers[q.id];
+        if (!v) continue;
+        const col = parseInt(v.replace('c',''), 10);
+        chosenByCat[q.id] = col;
+      } else if (q.id === 'antioxidant') {
+        chosenByCat[q.id] = aoToColumn(answers[q.id]);
+      }
+    }
+
+    const weights = {
+      goal: 6,
+      skin_type: 5,
+      skin_condition: 4,
+      outside: 3,
+      antioxidant: 2,
+      age: 1,
+    };
+
+    const results = products.map((p, idx) => {
+      const colsWithX = new Set(matrix[p.name] || []);
+
+      let matches = 0;
+      for (const c of chosenSet) if (colsWithX.has(c)) matches++;
+
+      let weighted = 0;
+      const tb = { goal:0, skin_type:0, skin_condition:0, outside:0, antioxidant:0, age:0 };
+      for (const [cat, col] of Object.entries(chosenByCat)) {
+        if (col == null) continue;
+        if (colsWithX.has(col)) {
+          weighted += weights[cat] || 0;
+          if (tb.hasOwnProperty(cat)) tb[cat] = 1;
+        }
+      }
+
+      return {
+        name: p.name,
+        catalog: p.catalog,
+        matches,
+        weighted,
+        tb,
+        order: idx,
+      };
+    });
+
+    results.sort((a,b) => {
+      // primary: matches
+      if (b.matches !== a.matches) return b.matches - a.matches;
+      // tie-break: goal, skin_type, skin_condition, outside, antioxidant, age
+      const keys = ['goal','skin_type','skin_condition','outside','antioxidant','age'];
+      for (const k of keys) {
+        if (b.tb[k] !== a.tb[k]) return b.tb[k] - a.tb[k];
+      }
+      // fallback: sheet order
+      return a.order - b.order;
+    });
+
+    return {results, chosenByCat};
+  }
+
+  function showResult() {
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('progressBar').style.width = '100%';
+
+    const {results} = computeScores();
+    const top3 = results.slice(0,3);
+
+    const list = document.getElementById('recList');
+    list.innerHTML = top3.map((r, i) => {
+      const why = `Matched ${r.matches}/6 answers`;
+      const cat = r.catalog ? `Catalog No. ${r.catalog}` : '';
+      return `<div class="rec-item">
+        <div class="name">${i+1}. ${r.name}</div>
+        <div class="meta">${[cat, why].filter(Boolean).join(' · ')}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('result').classList.add('active');
+  }
+
+  function showBreakdown() {
+    const el = document.getElementById('breakdown');
+    if (el.style.display === 'none') {
+      const {results, chosenByCat} = computeScores();
+      const top = results.slice(0,3);
+      const lines = [];
+      lines.push('<strong>Scoring notes</strong>');
+      lines.push('We count how many of your selected answers each ingredient matches (x in the matrix).');
+      lines.push('In case of ties, we prioritize matches in this order: main skincare goal, skin type, skin condition, time outdoors, antioxidant level, age.');
+      lines.push('');
+      lines.push('<strong>Your inputs</strong>');
+      // Pretty-print answers
+      for (const q of questions) {
+        if (q.type === 'choice') {
+          const opt = q.options.find(o => o.value === answers[q.id]);
+          lines.push(`${q.title}: ${opt ? opt.label : ''}`);
+        } else if (q.type === 'number') {
+          const v = answers[q.id];
+          const cls = (v <= 5) ? 'Low (1–5)' : 'High (6–10)';
+          lines.push(`${q.title}: ${v} → ${cls}`);
+        }
+      }
+      lines.push('');
+      lines.push('<strong>Top 3 detail</strong>');
+      top.forEach((r, i) => {
+        lines.push(`${i+1}) ${r.name} — matches: ${r.matches}/6`);
+      });
+
+      el.innerHTML = lines.map(s => `<div style="margin:6px 0;">${s}</div>`).join('');
+      el.style.display = 'block';
+    } else {
+      el.style.display = 'none';
+    }
+  }
+
+  function restart() {
+    for (const k in answers) delete answers[k];
+    currentIndex = 0;
+    document.getElementById('quiz').style.display = 'block';
+    document.getElementById('result').classList.remove('active');
+    document.getElementById('breakdown').style.display = 'none';
+    renderQuestion();
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>
